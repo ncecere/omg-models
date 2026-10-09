@@ -17,7 +17,7 @@ pub mod validate;
 use std::{fmt, path::Path};
 
 pub use decimal::Decimal;
-pub use load::{Catalog, Model, Provider};
+pub use load::{Catalog, DataFiles, Model, Provider};
 pub use meter::Meter;
 
 /// How serious an [`Issue`] is.
@@ -94,7 +94,16 @@ impl fmt::Display for Issue {
 /// Loads and validates `data_dir`. Returns the catalog when there are no
 /// errors, plus every issue (warnings included).
 pub fn load_validated(data_dir: &Path) -> (Option<Catalog>, Vec<Issue>) {
-    let (catalog, mut issues) = load::load(data_dir);
+    finish(load::load(data_dir))
+}
+
+/// [`load_validated`] for a data tree held in memory (paths relative to the
+/// data directory). The same loader rules and the full validator apply.
+pub fn load_validated_files(files: &DataFiles) -> (Option<Catalog>, Vec<Issue>) {
+    finish(load::load_files(files))
+}
+
+fn finish((catalog, mut issues): (Catalog, Vec<Issue>)) -> (Option<Catalog>, Vec<Issue>) {
     issues.extend(validate::validate(&catalog));
     issues.sort_by(|a, b| (&a.path, &a.at, &a.message).cmp(&(&b.path, &b.at, &b.message)));
     let ok = !issues.iter().any(|i| i.severity == Severity::Error);

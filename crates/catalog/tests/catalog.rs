@@ -366,3 +366,43 @@ fn models_dev_shape() {
         16_384
     );
 }
+
+#[test]
+fn in_memory_tree_loads_like_the_directory() {
+    use omg_models_catalog::{load::read_files, load_validated_files};
+    let (disk, disk_issues) = load_validated(&seed_dir());
+    let files = read_files(&seed_dir()).expect("read seed data");
+    assert!(files.keys().all(|p| p.starts_with("providers/")));
+    let (memory, memory_issues) = load_validated_files(&files);
+    assert_eq!(disk_issues, memory_issues);
+    assert_eq!(
+        export::build(&disk.expect("seed validates")),
+        export::build(&memory.expect("seed validates in memory"))
+    );
+
+    // Errors carry the same paths in memory as on disk.
+    let mut broken = files.clone();
+    broken.insert(
+        "providers/openai/models/notes.txt".into(),
+        b"stray".to_vec(),
+    );
+    broken.insert(
+        "providers/openai/models/gpt-6-luna.toml".into(),
+        b"id = \"gpt-6-luna\"\nname = 3\n".to_vec(),
+    );
+    let (catalog, issues) = load_validated_files(&broken);
+    assert!(catalog.is_none());
+    let paths: Vec<&str> = issues
+        .iter()
+        .filter(|i| i.severity == Severity::Error)
+        .map(|i| i.path.as_str())
+        .collect();
+    assert!(
+        paths.contains(&"providers/openai/models/notes.txt"),
+        "{paths:?}"
+    );
+    assert!(
+        paths.contains(&"providers/openai/models/gpt-6-luna.toml"),
+        "{paths:?}"
+    );
+}

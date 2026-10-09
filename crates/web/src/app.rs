@@ -12,7 +12,7 @@ use omg_models_catalog::{Decimal, model::Modality};
 use topcoat::{
     Result,
     asset::{AssetConfig, RouterBuilderAssetExt, asset},
-    context::{Cx, app_context},
+    context::Cx,
     router::{
         Router, RouterBuilderDiscoverExt, Slot, StatusCode, error::NotFoundError, layout,
         module_router, not_found, page, query_params, request,
@@ -33,18 +33,62 @@ use crate::{
     format,
     listing::{self, Filters, SortKey},
     security,
-    state::AppState,
+    state::{self, AppState, Live, LiveState},
 };
 
 not_found!();
 
+/// What [`router`] accepts: a fixed snapshot or a shared live state.
+pub struct LiveHandle(std::sync::Arc<LiveState>);
+
+impl From<AppState> for LiveHandle {
+    fn from(state: AppState) -> Self {
+        Self(std::sync::Arc::new(LiveState::new(state)))
+    }
+}
+
+impl From<std::sync::Arc<LiveState>> for LiveHandle {
+    fn from(live: std::sync::Arc<LiveState>) -> Self {
+        Self(live)
+    }
+}
+
+/// `2026-10-09T12:20:00Z` -> `2026-10-09 12:20 UTC` (other text unchanged).
+fn display_time(timestamp: &str) -> String {
+    match (timestamp.get(..10), timestamp.get(11..16)) {
+        (Some(date), Some(time)) if timestamp.len() == 20 => format!("{date} {time} UTC"),
+        _ => timestamp.to_owned(),
+    }
+}
+
+/// Footer line about the served data snapshot: `(time text, datetime)` and
+/// `(short commit, commit URL)`, each when known.
+type DataLine = (Option<(String, String)>, Option<(String, String)>);
+
+fn data_line(state: &AppState) -> Option<DataLine> {
+    let commit = state
+        .data
+        .commit
+        .as_deref()
+        .filter(|c| c.len() >= 7 && c.bytes().all(|b| b.is_ascii_hexdigit()))
+        .map(|c| {
+            (
+                c[..7].to_owned(),
+                format!("https://github.com/ncecere/omg-models/commit/{c}"),
+            )
+        });
+    let built_at = state.data.built_at.clone().map(|t| (display_time(&t), t));
+    (built_at.is_some() || commit.is_some()).then_some((built_at, commit))
+}
+
 /// Builds the router: pages, the JSON API routes, assets and the
-/// security-header layer.
-pub fn router(state: AppState, assets: impl Into<AssetConfig>) -> Router {
+/// security-header layer. Pass an [`AppState`] for fixed data, or an
+/// `Arc<LiveState>` shared with a refresher that swaps snapshots.
+pub fn router(state: impl Into<LiveHandle>, assets: impl Into<AssetConfig>) -> Router {
     module_router!()
         .discover()
         .assets(assets)
-        .app_context(state)
+        .app_context(Live(state.into().0))
         .layer(security::layer())
         .build()
 }
@@ -92,13 +136,14 @@ fn page_title(state: &AppState, path: &str) -> String {
 
 #[layout]
 async fn shell(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let path = request::uri(cx).path().to_owned();
     let title = page_title(state, &path);
     let updated = state
         .last_updated
         .as_deref()
         .map(|t| t.get(..10).unwrap_or(t).to_owned());
+    let data_line = data_line(state);
     let nav: Vec<(&str, &str, bool)> = NAV
         .iter()
         .map(|(href, text)| (*href, *text, nav_current(href, &path)))
@@ -199,6 +244,20 @@ async fn shell(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                             </p>
                             match updated {
                                 Some(updated) => <p>"Prices last checked " <time datetime=(updated.clone())>(updated)</time> "."</p>,
+                                None => "",
+                            }
+                            match data_line {
+                                Some((built_at, commit)) => <p>
+                                    match built_at {
+                                        Some((text, datetime)) => <span>"Data updated " <time datetime=(datetime)>(text)</time></span>,
+                                        None => "Data snapshot built into this release",
+                                    }
+                                    match commit {
+                                        Some((short, href)) => <span>" (commit " <a href=(href)><code>(short)</code></a> ")"</span>,
+                                        None => "",
+                                    }
+                                    "."
+                                </p>,
                                 None => "",
                             }
                         </div>
@@ -387,7 +446,7 @@ fn price_cell(value: Option<Decimal>) -> (String, bool) {
 
 #[page]
 async fn home(cx: &Cx) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let query = query_params::<HomeQuery>(cx)?;
     let filters = parse_filters(state, query);
     let mut rows: Vec<_> = listing::rows(&state.catalog)

@@ -4,7 +4,7 @@ mod provider_id;
 
 use topcoat::{
     Result,
-    context::{Cx, app_context},
+    context::Cx,
     router::page,
     view::{View, attributes, view},
 };
@@ -14,12 +14,12 @@ use crate::{
         badge::{BadgeVariant, badge},
         card::{card, card_content, card_description, card_header, card_title},
     },
-    state::AppState,
+    state,
 };
 
 #[page]
 async fn providers_page(cx: &Cx) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let providers: Vec<(String, String, &'static str, String, usize)> = state
         .catalog
         .providers

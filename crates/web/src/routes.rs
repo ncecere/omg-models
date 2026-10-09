@@ -3,11 +3,11 @@
 
 use topcoat::{
     Result,
-    context::{Cx, app_context},
+    context::Cx,
     router::{Body, HeaderValue, StatusCode, header, request, response::Response, route},
 };
 
-use crate::state::AppState;
+use crate::state;
 
 /// Browsers may cache API files for five minutes and use a stale copy for an
 /// hour while revalidating with the ETag.
@@ -35,7 +35,7 @@ fn if_none_match(cx: &Cx, etag: &str) -> bool {
 /// Serves a pre-built JSON file with caching validators; unknown paths get a
 /// JSON 404 (never the HTML not-found page).
 fn serve_file(cx: &Cx, path: &str) -> Response {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let Some(file) = state.files.get(path) else {
         let mut response = response(
             StatusCode::NOT_FOUND,
@@ -119,11 +119,57 @@ async fn api_v1_preflight() -> Result<Response> {
     Ok(preflight())
 }
 
-/// Liveness: the process is up and the catalog loaded (it is validated
+/// Readiness: a validated catalog is being served. The embedded snapshot is
+/// validated before the server starts and a refresh only ever swaps in a
+/// validated snapshot, so a failed refresh does not make the server unready
+/// (it keeps serving the last good data; see `/api/status`).
+#[route(GET "/readyz")]
+async fn readyz(cx: &Cx) -> Result<Response> {
+    let state = state::current(cx);
+    let (status, body) = if state.catalog.models.is_empty() {
+        (StatusCode::SERVICE_UNAVAILABLE, "empty\n")
+    } else {
+        (StatusCode::OK, "ready\n")
+    };
+    let mut response = response(status, "text/plain; charset=utf-8", body);
+    response
+        .headers_mut()
+        .insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
+    Ok(response)
+}
+
+/// The served data snapshot and the live-refresh status.
+#[route(GET "/api/status")]
+async fn api_status(cx: &Cx) -> Result<Response> {
+    let snapshot = state::current(cx);
+    let refresh = state::live(cx).refresh_status();
+    let body = serde_json::json!({
+        "version": env!("CARGO_PKG_VERSION"),
+        "data": {
+            "source": snapshot.data.source,
+            "commit": snapshot.data.commit,
+            "built_at": snapshot.data.built_at,
+            "data_sha256": snapshot.data.data_sha256,
+            "last_updated": snapshot.last_updated,
+            "providers": snapshot.catalog.providers.len(),
+            "models": snapshot.catalog.models.len(),
+        },
+        "refresh": refresh,
+    });
+    let mut bytes = serde_json::to_vec_pretty(&body).unwrap_or_default();
+    bytes.push(b'\n');
+    let mut response = response(StatusCode::OK, "application/json; charset=utf-8", bytes);
+    response
+        .headers_mut()
+        .insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
+    Ok(response)
+}
+
+/// Liveness: the process is up and serving a catalog (it is validated
 /// before the server starts).
 #[route(GET "/healthz")]
 async fn healthz(cx: &Cx) -> Result<Response> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let body = if state.catalog.models.is_empty() {
         "empty\n"
     } else {

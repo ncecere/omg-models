@@ -36,6 +36,11 @@ ENV OMG_MODELS_DATA=/app/data \
     OMG_MODELS_ASSETS=/app/assets \
     OMG_MODELS_LISTEN=0.0.0.0:8080 \
     HOME=/nonexistent
+# The commit the baked-in data comes from (image.yml passes github.sha);
+# shown in the footer and /api/status until a remote snapshot is loaded.
+# Live refresh is off unless OMG_MODELS_DATA_URL is set (docs/operations.md).
+ARG SOURCE_COMMIT=""
+ENV OMG_MODELS_DATA_COMMIT=${SOURCE_COMMIT}
 # UID/GID 10001, like the Open Model Gateway image. Nothing is written at
 # runtime, so the root filesystem can be mounted read-only.
 USER 10001:10001
