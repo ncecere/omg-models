@@ -5,11 +5,15 @@
 //! does), or point `OMG_MODELS_ASSETS` at a bundle directory. Without a
 //! bundle the tests are skipped unless `OMG_MODELS_REQUIRE_ASSETS=1`.
 
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use omg_models_catalog::{export, load_validated};
 use omg_models_web::{
     AppState, AssetBundle, router,
+    state::{DataInfo, DataSource, LiveState},
     topcoat::router::{Body, Router, to_bytes},
 };
 
@@ -17,7 +21,7 @@ fn root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
 
-fn app() -> Option<Router> {
+fn bundle() -> Option<AssetBundle> {
     let assets = std::env::var_os("OMG_MODELS_ASSETS")
         .map_or_else(|| root().join("target/debug/assets"), PathBuf::from);
     let bundle = match AssetBundle::load_dir(&assets) {
@@ -35,11 +39,16 @@ fn app() -> Option<Router> {
             return None;
         }
     };
+    Some(bundle)
+}
+
+fn seed_state() -> AppState {
     let (catalog, _) = load_validated(&root().join("data"));
-    Some(router(
-        AppState::new(catalog.expect("seed data validates")),
-        bundle,
-    ))
+    AppState::new(catalog.expect("seed data validates"))
+}
+
+fn app() -> Option<Router> {
+    Some(router(seed_state(), bundle()?))
 }
 
 struct Reply {
@@ -236,4 +245,63 @@ async fn not_found_responses() {
     assert_security_headers(&reply);
     let reply = get(&app, "/models").await;
     assert_eq!(reply.status, 308);
+}
+
+#[tokio::test]
+async fn readiness_and_status() {
+    let Some(app) = app() else { return };
+    let reply = get(&app, "/readyz").await;
+    assert_eq!(reply.status, 200);
+    assert_eq!(reply.body, "ready\n");
+    assert_eq!(header(&reply, "cache-control"), "no-store");
+    let reply = get(&app, "/api/status").await;
+    assert_eq!(reply.status, 200);
+    assert_eq!(header(&reply, "cache-control"), "no-store");
+    let status: serde_json::Value = serde_json::from_str(&reply.body).unwrap();
+    assert_eq!(status["data"]["source"], "embedded");
+    assert_eq!(status["refresh"]["enabled"], false);
+    assert_security_headers(&reply);
+}
+
+#[tokio::test]
+async fn swapping_the_live_state_changes_pages_api_and_footer() {
+    let Some(bundle) = bundle() else { return };
+    let live = Arc::new(LiveState::new(seed_state()));
+    let app = router(Arc::clone(&live), bundle);
+    let reply = get(&app, "/models/gpt-oss-120b").await;
+    assert_eq!(reply.status, 200);
+    assert!(!reply.body.contains("Data updated"));
+
+    let (catalog, _) = load_validated(&root().join("data"));
+    let mut catalog = catalog.unwrap();
+    catalog.models.remove("gpt-oss-120b");
+    let commit = "0123456789abcdef0123456789abcdef01234567";
+    live.swap(AppState::with_data(
+        catalog,
+        DataInfo {
+            source: DataSource::Remote,
+            commit: Some(commit.into()),
+            built_at: Some("2026-10-09T12:20:00Z".into()),
+            data_sha256: Some("ab".repeat(32)),
+        },
+    ));
+
+    assert_eq!(get(&app, "/models/gpt-oss-120b").await.status, 404);
+    assert_eq!(
+        get(&app, "/api/v1/models/gpt-oss-120b.json").await.status,
+        404
+    );
+    let models = get(&app, "/api/v1/models.json").await;
+    assert!(!models.body.contains("gpt-oss-120b"));
+    let home = get(&app, "/").await;
+    assert!(home.body.contains("Data updated"), "footer");
+    assert!(home.body.contains("2026-10-09 12:20 UTC"));
+    assert!(home.body.contains(&format!(
+        "https://github.com/ncecere/omg-models/commit/{commit}"
+    )));
+    assert!(home.body.contains("0123456"));
+    let status: serde_json::Value =
+        serde_json::from_str(&get(&app, "/api/status").await.body).unwrap();
+    assert_eq!(status["data"]["source"], "remote");
+    assert_eq!(status["data"]["commit"], commit);
 }

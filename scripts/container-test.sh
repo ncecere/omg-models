@@ -2,7 +2,7 @@
 # Runtime contract for the omg-models image (CI, image.yml and local use):
 #   scripts/container-test.sh <image>
 # Checks: runs as 10001:10001, no shell, read-only root filesystem with all
-# capabilities dropped, /healthz, the JSON API with CORS and caching headers,
+# capabilities dropped, /healthz, /readyz, /api/status, the JSON API with CORS and caching headers,
 # the security headers on pages, and the exec-form health check.
 set -euo pipefail
 
@@ -33,6 +33,11 @@ for _ in $(seq 1 30); do
   sleep 1
 done
 [ "$(curl -fsS "http://127.0.0.1:${port}/healthz")" = "ok" ] || fail "/healthz"
+
+[ "$(curl -fsS "http://127.0.0.1:${port}/readyz")" = "ready" ] || fail "/readyz"
+status=$(curl -fsS "http://127.0.0.1:${port}/api/status")
+grep -q '"source": "embedded"' <<<"${status}" || fail "/api/status source"
+grep -q '"enabled": false' <<<"${status}" || fail "/api/status refresh should be off by default"
 
 headers=$(curl -fsS -D - -o /dev/null "http://127.0.0.1:${port}/api/v1/omg-prices.json")
 grep -qi '^access-control-allow-origin: \*' <<<"${headers}" || fail "API without CORS *"

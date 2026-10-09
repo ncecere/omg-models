@@ -3,7 +3,7 @@
 use omg_models_catalog::{Decimal, Meter, Model};
 use topcoat::{
     Result,
-    context::{Cx, app_context},
+    context::Cx,
     router::{page, query_params},
     view::{View, attributes, view},
 };
@@ -15,7 +15,7 @@ use crate::{
         table::{table, table_body, table_cell, table_head, table_header, table_row},
     },
     format,
-    state::AppState,
+    state::{self, AppState},
     views::modalities,
 };
 
@@ -55,7 +55,7 @@ fn lowest(state: &AppState, model: &Model, meter: Meter) -> String {
 
 #[page]
 async fn compare_page(cx: &Cx) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let query = query_params::<CompareQuery>(cx)?;
     let requested: Vec<String> = [&query.m1, &query.m2, &query.m3, &query.m4]
         .into_iter()

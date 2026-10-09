@@ -19,12 +19,14 @@ path = "src/main.rs"
 [dependencies]
 anyhow.workspace = true
 clap.workspace = true
+flate2.workspace = true
 omg-models-catalog.workspace = true
 omg-models-web.workspace = true
 regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
+tar.workspace = true
 tokio.workspace = true
 toml.workspace = true
 ureq.workspace = true

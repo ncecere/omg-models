@@ -11,8 +11,9 @@ use std::{
 
 use anyhow::Context;
 use clap::{Parser, Subcommand};
+use omg_models_catalog::time::Timestamp;
 use omg_models_catalog::{Severity, export, load_validated, schema};
-use omg_models_cli::sync;
+use omg_models_cli::{snapshot, sync};
 
 #[derive(Parser)]
 #[command(
@@ -41,6 +42,21 @@ enum Command {
         data: PathBuf,
         #[arg(long, default_value = "dist")]
         out: PathBuf,
+    },
+    /// Write a publishable snapshot: catalog.tar.gz (data/ and the built
+    /// dist/) and catalog.manifest.json (commit, build time, SHA-256s).
+    Package {
+        #[arg(long, env = "OMG_MODELS_DATA", default_value = "data")]
+        data: PathBuf,
+        /// Output directory for the two files.
+        #[arg(long)]
+        out: PathBuf,
+        /// Full commit SHA the data comes from.
+        #[arg(long)]
+        commit: String,
+        /// Build time (`YYYY-MM-DDTHH:MM:SSZ`; default: now).
+        #[arg(long)]
+        built_at: Option<String>,
     },
     /// Print the JSON Schema of provider.toml and model files.
     Schema {
@@ -126,11 +142,41 @@ fn build(data: &Path, out: &Path) -> anyhow::Result<ExitCode> {
     Ok(ExitCode::SUCCESS)
 }
 
+fn package(
+    data: &Path,
+    out: &Path,
+    commit: &str,
+    built_at: Option<&str>,
+) -> anyhow::Result<ExitCode> {
+    let built_at = match built_at {
+        Some(text) => Timestamp::parse(text)
+            .with_context(|| format!("--built-at {text:?} is not YYYY-MM-DDTHH:MM:SSZ"))?,
+        None => Timestamp::now(),
+    };
+    let manifest = snapshot::write_package(data, out, commit, &built_at)?;
+    println!(
+        "wrote {} ({} files, {} bytes) and {} to {}\ntotal_sha256 {}",
+        manifest.archive.name,
+        manifest.files.len(),
+        manifest.archive.size,
+        snapshot::MANIFEST_NAME,
+        out.display(),
+        manifest.total_sha256
+    );
+    Ok(ExitCode::SUCCESS)
+}
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
     let result = match cli.command {
         Command::Validate { data, strict } => Ok(validate(&data, strict)),
         Command::Build { data, out } => build(&data, &out),
+        Command::Package {
+            data,
+            out,
+            commit,
+            built_at,
+        } => package(&data, &out, &commit, built_at.as_deref()),
         Command::Schema { out } => {
             let text = schema::schemas_json();
             if let Some(path) = out {

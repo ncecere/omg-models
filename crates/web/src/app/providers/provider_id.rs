@@ -2,7 +2,7 @@
 
 use topcoat::{
     Result,
-    context::{Cx, app_context},
+    context::Cx,
     router::{error::RouterErrorExt, module_param, page, path_param},
     view::{View, attributes, view},
 };
@@ -12,8 +12,7 @@ use crate::{
         badge::{BadgeVariant, badge},
         table::{table, table_body, table_cell, table_head, table_header, table_row},
     },
-    format, listing,
-    state::AppState,
+    format, listing, state,
     ui::fact,
 };
 
@@ -21,7 +20,7 @@ module_param!(provider_id);
 
 #[page]
 async fn provider_page(cx: &Cx) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let id = path_param::<ProviderId>(cx);
     let provider = &state.catalog.providers.get(id).ok_or_not_found()?.file;
     let name = provider.name.clone();

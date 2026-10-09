@@ -2,14 +2,14 @@
 
 use topcoat::{
     Result,
-    context::{Cx, app_context},
+    context::Cx,
     router::page,
     view::{View, attributes, view},
 };
 
 use crate::{
     components::table::{table, table_body, table_cell, table_head, table_header, table_row},
-    state::AppState,
+    state::{self, AppState},
     ui::code_block,
 };
 
@@ -70,12 +70,12 @@ fn omg_example(state: &AppState) -> String {
 
 #[page]
 async fn api_page(cx: &Cx) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let example = omg_example(state);
     Ok(view! {
         <h1 class="mb-2 text-3xl font-semibold tracking-tight">"JSON API"</h1>
         <p class="mb-6 max-w-3xl text-muted-foreground">
-            "Static JSON files, rebuilt from the catalog on every deploy. No key, no sign-up, no rate limits beyond fair use. Responses carry "
+            "Static JSON files, rebuilt from the catalog whenever its data changes; " <a href="/api/status"><code>"/api/status"</code></a> " names the data snapshot being served. No key, no sign-up, no rate limits beyond fair use. Responses carry "
             <code>"Access-Control-Allow-Origin: *"</code> ", an " <code>"ETag"</code> " and "
             <code>"Cache-Control: public, max-age=300"</code> "; send " <code>"If-None-Match"</code> " to get a 304 when nothing changed."
         </p>

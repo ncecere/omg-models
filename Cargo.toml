@@ -19,6 +19,9 @@ omg-models-web = { path = "crates/web" }
 
 anyhow = "=1.0.104"
 clap = { version = "=4.6.7", features = ["derive", "env"] }
+# Snapshot archives (`omg-models package`, live data refresh): pure-Rust
+# gzip (miniz_oxide) and tar without xattr support.
+flate2 = { version = "=1.1.10", default-features = false, features = ["rust_backend"] }
 regex = "=1.13.1"
 schemars = "=1.2.2"
 serde = { version = "=1.0.229", features = ["derive"] }
@@ -26,6 +29,7 @@ serde = { version = "=1.0.229", features = ["derive"] }
 # prices (`3e-06`) are parsed as exact decimals and never through f64.
 serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
 sha2 = "=0.11.0"
+tar = { version = "=0.4.46", default-features = false }
 thiserror = "=2.0.21"
 tokio = { version = "=1.53.2", features = ["rt-multi-thread", "macros", "net", "signal"] }
 toml = "=1.1.8"

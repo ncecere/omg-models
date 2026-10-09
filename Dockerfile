@@ -1,10 +1,8 @@
-# syntax=docker/dockerfile:1
-
 # Build: compile the CLI (which embeds the Topcoat web app), bundle its
 # assets (Tailwind CSS, Inter, logo) next to it, and check the data. The
 # Tailwind build script downloads Topcoat's pinned Tailwind CLI release, so
 # the build stage needs network access to github.com.
-FROM rust:1.98.1-bookworm@sha256:93ce27a88655056a51dbdd8f5f2d7ddc071c7b0070fb288a37b5a285fc83971e AS build
+FROM mirror.gcr.io/library/rust:1.98.1-bookworm@sha256:93ce27a88655056a51dbdd8f5f2d7ddc071c7b0070fb288a37b5a285fc83971e AS build
 WORKDIR /build
 ARG CARGO_BUILD_JOBS=2
 # The asset bundler must match the topcoat crate version (=0.10.0).
@@ -36,6 +34,11 @@ ENV OMG_MODELS_DATA=/app/data \
     OMG_MODELS_ASSETS=/app/assets \
     OMG_MODELS_LISTEN=0.0.0.0:8080 \
     HOME=/nonexistent
+# The commit the baked-in data comes from (image.yml passes github.sha);
+# shown in the footer and /api/status until a remote snapshot is loaded.
+# Live refresh is off unless OMG_MODELS_DATA_URL is set (docs/operations.md).
+ARG SOURCE_COMMIT=""
+ENV OMG_MODELS_DATA_COMMIT=${SOURCE_COMMIT}
 # UID/GID 10001, like the Open Model Gateway image. Nothing is written at
 # runtime, so the root filesystem can be mounted read-only.
 USER 10001:10001

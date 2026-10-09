@@ -16,10 +16,10 @@ site runs without JavaScript, cookies, tracking or third-party requests.
 
 ```text
 crates/catalog   data model, loader, validator, JSON exports (no I/O beyond reading data/)
-crates/cli       omg-models: validate | build | schema | sync | serve | healthcheck
+crates/cli       omg-models: validate | build | package | schema | sync | serve | healthcheck
 crates/web       Topcoat app (pages, static JSON API, security headers), Topcoat UI components
 data/            providers/<provider>/provider.toml, providers/<provider>/models/<model>.toml
-docs/            data-format.md
+docs/            data-format.md, operations.md (data publishing, live refresh, deploy)
 ```
 
 ## Data
@@ -54,7 +54,8 @@ Mini, gpt-oss-120b, Llama 4 Maverick), 19 offerings.
 | `/api/v1/omg-prices.json` | OMG Pricing v3 lines: integer micro-USD per batch (exact; non-integer values rounded up and flagged) |
 | `/api/v1/history.json` | every price entry, newest first |
 | `/api/v1/schema.json` | JSON Schema of the data files |
-| `/healthz` | liveness |
+| `/healthz`, `/readyz` | liveness; readiness (a validated catalog is loaded) |
+| `/api/status` | the served data snapshot (source, commit, build time) and the live-refresh status |
 
 API files are the exact bytes `omg-models build` writes, served with
 `Access-Control-Allow-Origin: *`, a strong `ETag` (304 on `If-None-Match`)
@@ -78,12 +79,14 @@ cargo run -p omg-models -- schema              # JSON Schema of the data files
 topcoat asset bundle --bin omg-models          # CSS, fonts, logo -> target/debug/assets
 cargo run -p omg-models -- serve --listen 127.0.0.1:8941
 cargo run -p omg-models -- sync --dry-run      # compare with upstream sources
+cargo run -p omg-models -- package --out /tmp/pkg --commit "$(git rev-parse HEAD)"  # publishable snapshot
 ```
 
 `serve` validates the data, builds the JSON in memory and refuses to start on
 errors. Settings: `OMG_MODELS_DATA` (default `data`), `OMG_MODELS_LISTEN`
 (default `127.0.0.1:8080`), `OMG_MODELS_ASSETS` (default `assets/` next to the
-binary). Use `topcoat dev` for live reload while editing the site.
+binary), and for live data `OMG_MODELS_DATA_URL` / `OMG_MODELS_DATA_REFRESH`
+(see Deploy). Use `topcoat dev` for live reload while editing the site.
 
 Checks (CI runs the same):
 
@@ -175,8 +178,42 @@ proxy for `models.omg.bitop.dev`.
 linux/arm64 on native runners, pushes by digest, checks the version, runs
 the container contract and Trivy (fixable HIGH/CRITICAL fail), then
 publishes a multi-arch index to `ghcr.io/ncecere/omg-models` with SBOM and
-provenance and signs it with cosign. Deploy by digest; data changes ship
-with the next image.
+provenance and signs it with cosign. Deploy by digest.
+
+### Live data (no redeploy for data changes)
+
+Images change only with code. Data is published separately and pulled by
+the running server, so a cluster pinned to an image digest (Flux without
+image automation) picks up hourly price changes without new images or
+deploy commits:
+
+```text
+main ──▶ publish-data.yml (push to main + hourly :20)
+           validate ▸ build dist/ ▸ package ▸ sign manifest (cosign keyless)
+           ──▶ release `data-latest`: catalog.tar.gz, catalog.manifest.json(.sigstore.json)
+                 (uploaded only when total_sha256 changed)
+server:  start on the baked-in data ──▶ every OMG_MODELS_DATA_REFRESH:
+           GET manifest (If-None-Match) ▸ new data? GET archive
+           ▸ verify every SHA-256 ▸ unpack in memory ▸ full validator
+           ▸ atomic swap of catalog + API + pages; on any failure keep serving
+browser ──▶ server only (same-origin, strict CSP; the fetch is server-side)
+```
+
+| Environment | Default | |
+|---|---|---|
+| `OMG_MODELS_DATA_URL` | unset: no refresh | `https://github.com/ncecere/omg-models/releases/download/data-latest/catalog.manifest.json` |
+| `OMG_MODELS_DATA_REFRESH` | `15m` | `30s`, `15m`, `1h` or seconds; minimum 10s |
+| `OMG_MODELS_DATA_MAX_BYTES` | 16 MiB | archive cap (unpacked: 8x) |
+
+Egress needed (TCP 443, server only): `github.com`,
+`release-assets.githubusercontent.com` and `objects.githubusercontent.com`
+(GitHub's release-asset redirect targets). `api.github.com` is not needed by
+the server. Fetches are HTTPS only, follow redirects only to those hosts (or
+the configured URL's host), have a timeout and size caps, and send no
+credentials. `/readyz`, `/api/status` and the footer ("Data updated …
+(commit …)") show what is served; failures keep the current data. Details,
+the manifest format, signature verification and troubleshooting:
+[docs/operations.md](docs/operations.md).
 
 ## Licence
 

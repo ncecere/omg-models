@@ -3,7 +3,7 @@
 
 use topcoat::{
     Result,
-    context::{Cx, app_context},
+    context::Cx,
     router::{error::RouterErrorExt, module_param, page, path_param},
     view::{View, attributes, view},
 };
@@ -14,8 +14,7 @@ use crate::{
         card::{card, card_content, card_header, card_title},
         table::{table, table_body, table_cell, table_head, table_header, table_row},
     },
-    format,
-    state::AppState,
+    format, state,
     ui::{code_block, fact, price_table},
     views::{modalities, offering_view},
 };
@@ -24,7 +23,7 @@ module_param!(model_id);
 
 #[page]
 async fn model_page(cx: &Cx) -> Result<impl View> {
-    let state = app_context::<AppState>(cx);
+    let state = state::current(cx);
     let id = path_param::<ModelId>(cx);
     let model = state.catalog.models.get(id).ok_or_not_found()?;
     let file = &model.file;
