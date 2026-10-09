@@ -2,7 +2,7 @@
 # assets (Tailwind CSS, Inter, logo) next to it, and check the data. The
 # Tailwind build script downloads Topcoat's pinned Tailwind CLI release, so
 # the build stage needs network access to github.com.
-FROM mirror.gcr.io/library/rust:1.98.1-bookworm@sha256:93ce27a88655056a51dbdd8f5f2d7ddc071c7b0070fb288a37b5a285fc83971e AS build
+FROM mirror.gcr.io/library/rust:1.99.0-bookworm@sha256:114c7a4425406451c2866b6aafe69fe29b1b298832db1277d411ac73c82d04d6 AS build
 WORKDIR /build
 ARG CARGO_BUILD_JOBS=2
 # The asset bundler must match the topcoat crate version (=0.10.0).
