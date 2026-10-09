@@ -1,10 +1,8 @@
-# syntax=docker/dockerfile:1
-
 # Build: compile the CLI (which embeds the Topcoat web app), bundle its
 # assets (Tailwind CSS, Inter, logo) next to it, and check the data. The
 # Tailwind build script downloads Topcoat's pinned Tailwind CLI release, so
 # the build stage needs network access to github.com.
-FROM rust:1.98.1-bookworm@sha256:93ce27a88655056a51dbdd8f5f2d7ddc071c7b0070fb288a37b5a285fc83971e AS build
+FROM mirror.gcr.io/library/rust:1.98.1-bookworm@sha256:93ce27a88655056a51dbdd8f5f2d7ddc071c7b0070fb288a37b5a285fc83971e AS build
 WORKDIR /build
 ARG CARGO_BUILD_JOBS=2
 # The asset bundler must match the topcoat crate version (=0.10.0).
