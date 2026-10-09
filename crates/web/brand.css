@@ -1,0 +1,240 @@
+/*
+ * Open Model Gateway (OMG) brand tokens for Tailwind CSS v4.
+ *
+ * One file, meant to be shared verbatim by the OMG website (omg-website,
+ * app/brand.css) and the OMG docs (app/brand.css in the docs repository).
+ * Change it in both places at once.
+ *
+ * The values come from OMG's own dashboard (github.com/ncecere/open-model-gateway,
+ * v0.3.0): apps/web/src/components/ui/themes/neutral.css (the Bitop "neutral"
+ * theme: cool slate neutrals with an indigo accent, light and dark) and
+ * apps/web/src/components/ui/styles/tokens.css (radii, font stacks). The
+ * contrast ratios noted there hold here.
+ *
+ * Contrast (WCAG 2.1): body text, muted text, subtle text and links meet AA
+ * (4.5:1) on bg, surface, surface-raised and surface-sunken in both modes.
+ * Control boundaries (border-strong) and the focus ring meet 3:1. Decorative
+ * hairlines (border, border-emphasis) and highlight carry no meaning.
+ *
+ * Import it after Tailwind:  @import "tailwindcss";  @import "./brand.css";
+ * The font is Inter Variable, self-hosted by each site
+ * (@fontsource-variable/inter); nothing is loaded from a CDN.
+ *
+ * The dashboard follows the system colour scheme and is light without one, so
+ * light values apply to :root. Dark values apply under .dark or
+ * [data-theme="dark"], and follow the system setting when neither .light nor
+ * [data-theme="light"] is set.
+ */
+
+:root,
+.light,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces */
+  --omg-bg: #f7f8fa; /* app background, off-white (neutral-50) */
+  --omg-surface: #ffffff; /* cards, tables, inputs */
+  --omg-surface-raised: #ffffff; /* popovers, dialogs, menus */
+  --omg-surface-sunken: #f0f2f5; /* wells, code, table header tint (neutral-100) */
+  --omg-surface-hover: rgba(15, 23, 42, 0.04);
+
+  /* Text */
+  --omg-text: #161a22; /* 16.4:1 on bg */
+  --omg-text-muted: #525a69; /* 6.5:1 on bg, 6.2:1 on surface-sunken */
+  --omg-text-subtle: #646c7b; /* 4.97:1 on bg, 4.71:1 on surface-sunken */
+  --omg-text-inverse: #ffffff;
+
+  /* Borders */
+  --omg-border: rgba(15, 23, 42, 0.08); /* decorative hairlines */
+  --omg-border-emphasis: rgba(15, 23, 42, 0.16);
+  --omg-border-strong: #7f8795; /* control boundaries, 3.41:1+ */
+
+  /* Indigo accent */
+  --omg-primary: #4b4fd6; /* white text 6.20:1; as text on bg 5.83:1 */
+  --omg-primary-hover: #3d3fb4; /* white text 8.18:1 */
+  --omg-primary-active: #32338f;
+  --omg-primary-contrast: #ffffff;
+  --omg-primary-subtle: #f0f1fe; /* active nav tint */
+  --omg-primary-subtle-text: #3d3fb4; /* 7.29:1 on primary-subtle */
+  --omg-link: #4b4fd6; /* 5.83:1 on bg, 6.20:1 on surface */
+  --omg-link-hover: #32338f;
+  --omg-focus-ring: #4b4fd6; /* 5.83:1 on bg */
+  --omg-highlight: #2dd4bf; /* decorative only */
+
+  /* Status */
+  --omg-danger: #b42318; /* white text 6.57:1 */
+  --omg-danger-subtle: #fef2f2;
+  --omg-danger-text: #8f1d16; /* 8.15:1 on danger-subtle */
+  --omg-success: #0e6b3f;
+  --omg-success-subtle: #edfbf3;
+  --omg-success-text: #0e6b3f; /* 6.17:1 on success-subtle */
+  --omg-warning: #92560a;
+  --omg-warning-subtle: #fff8eb;
+  --omg-warning-text: #7a4508; /* 7.41:1 on warning-subtle */
+  --omg-info: #1d55c9;
+  --omg-info-subtle: #eff5ff;
+  --omg-info-text: #1d55c9; /* 6.00:1 on info-subtle */
+
+  /* Shadows: a 1px ring plus diffuse layers. */
+  --omg-shadow-1: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --omg-shadow-2: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 12px -2px rgba(15, 23, 42, 0.06);
+  --omg-shadow-3: 0 0 0 1px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.04),
+    0 12px 28px -6px rgba(15, 23, 42, 0.14);
+}
+
+.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --omg-bg: #0b0d12;
+  --omg-surface: #111319;
+  --omg-surface-raised: #171a21;
+  --omg-surface-sunken: #0e1015;
+  --omg-surface-hover: rgba(255, 255, 255, 0.04);
+
+  --omg-text: #eceef2; /* 15.98:1 on surface */
+  --omg-text-muted: #9ba3b0; /* 7.30:1 on surface, 6.85:1 on surface-raised */
+  --omg-text-subtle: #9098a6; /* 5.99:1 on surface-raised, 6.69:1 on bg */
+  --omg-text-inverse: #0b0d12;
+
+  --omg-border: rgba(255, 255, 255, 0.08);
+  --omg-border-emphasis: rgba(255, 255, 255, 0.16);
+  --omg-border-strong: #6b7383; /* 3.89:1 on surface */
+
+  --omg-primary: #5357e6; /* white text 5.42:1 (fills only; use link for text) */
+  --omg-primary-hover: #5d61ec;
+  --omg-primary-active: #4448d2;
+  --omg-primary-contrast: #ffffff;
+  --omg-primary-subtle: rgba(94, 99, 234, 0.18);
+  --omg-primary-subtle-text: #b4b8fa; /* ~8.8:1 on the subtle tint */
+  --omg-link: #a3a9f7; /* 8.47:1 on surface */
+  --omg-link-hover: #c7cbfc;
+  --omg-focus-ring: #8f95f5; /* 6.45:1 on surface-raised, 7.21:1 on bg */
+  --omg-highlight: #2dd4bf;
+
+  --omg-danger: #c0322b; /* white text 5.63:1 */
+  --omg-danger-subtle: #2a1215;
+  --omg-danger-text: #fca5a5;
+  --omg-success: #3fbf86;
+  --omg-success-subtle: #0f2419;
+  --omg-success-text: #6ee7a8;
+  --omg-warning: #f5b544;
+  --omg-warning-subtle: #2a1f0b;
+  --omg-warning-text: #fcd27b;
+  --omg-info: #7fa7f7;
+  --omg-info-subtle: #111d36;
+  --omg-info-text: #a9c4ff;
+
+  --omg-shadow-1: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --omg-shadow-2: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --omg-shadow-3: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 12px 28px -6px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --omg-bg: #0b0d12;
+    --omg-surface: #111319;
+    --omg-surface-raised: #171a21;
+    --omg-surface-sunken: #0e1015;
+    --omg-surface-hover: rgba(255, 255, 255, 0.04);
+
+    --omg-text: #eceef2;
+    --omg-text-muted: #9ba3b0;
+    --omg-text-subtle: #9098a6;
+    --omg-text-inverse: #0b0d12;
+
+    --omg-border: rgba(255, 255, 255, 0.08);
+    --omg-border-emphasis: rgba(255, 255, 255, 0.16);
+    --omg-border-strong: #6b7383;
+
+    --omg-primary: #5357e6;
+    --omg-primary-hover: #5d61ec;
+    --omg-primary-active: #4448d2;
+    --omg-primary-contrast: #ffffff;
+    --omg-primary-subtle: rgba(94, 99, 234, 0.18);
+    --omg-primary-subtle-text: #b4b8fa;
+    --omg-link: #a3a9f7;
+    --omg-link-hover: #c7cbfc;
+    --omg-focus-ring: #8f95f5;
+    --omg-highlight: #2dd4bf;
+
+    --omg-danger: #c0322b;
+    --omg-danger-subtle: #2a1215;
+    --omg-danger-text: #fca5a5;
+    --omg-success: #3fbf86;
+    --omg-success-subtle: #0f2419;
+    --omg-success-text: #6ee7a8;
+    --omg-warning: #f5b544;
+    --omg-warning-subtle: #2a1f0b;
+    --omg-warning-text: #fcd27b;
+    --omg-info: #7fa7f7;
+    --omg-info-subtle: #111d36;
+    --omg-info-text: #a9c4ff;
+
+    --omg-shadow-1: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --omg-shadow-2: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.4),
+      0 4px 12px -2px rgba(0, 0, 0, 0.4);
+    --omg-shadow-3: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.4),
+      0 12px 28px -6px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/*
+ * Tailwind theme: utilities such as bg-brand-surface, text-brand-muted,
+ * border-brand-border, bg-brand-primary, text-brand-link, rounded-card,
+ * shadow-brand-2 and font-sans.
+ */
+@theme inline {
+  --color-brand-bg: var(--omg-bg);
+  --color-brand-surface: var(--omg-surface);
+  --color-brand-surface-raised: var(--omg-surface-raised);
+  --color-brand-surface-sunken: var(--omg-surface-sunken);
+  --color-brand-surface-hover: var(--omg-surface-hover);
+  --color-brand-text: var(--omg-text);
+  --color-brand-muted: var(--omg-text-muted);
+  --color-brand-subtle: var(--omg-text-subtle);
+  --color-brand-inverse: var(--omg-text-inverse);
+  --color-brand-border: var(--omg-border);
+  --color-brand-border-emphasis: var(--omg-border-emphasis);
+  --color-brand-border-strong: var(--omg-border-strong);
+  --color-brand-primary: var(--omg-primary);
+  --color-brand-primary-hover: var(--omg-primary-hover);
+  --color-brand-primary-active: var(--omg-primary-active);
+  --color-brand-primary-contrast: var(--omg-primary-contrast);
+  --color-brand-primary-subtle: var(--omg-primary-subtle);
+  --color-brand-primary-subtle-text: var(--omg-primary-subtle-text);
+  --color-brand-link: var(--omg-link);
+  --color-brand-link-hover: var(--omg-link-hover);
+  --color-brand-focus: var(--omg-focus-ring);
+  --color-brand-highlight: var(--omg-highlight);
+  --color-brand-danger: var(--omg-danger);
+  --color-brand-danger-subtle: var(--omg-danger-subtle);
+  --color-brand-danger-text: var(--omg-danger-text);
+  --color-brand-success: var(--omg-success);
+  --color-brand-success-subtle: var(--omg-success-subtle);
+  --color-brand-success-text: var(--omg-success-text);
+  --color-brand-warning: var(--omg-warning);
+  --color-brand-warning-subtle: var(--omg-warning-subtle);
+  --color-brand-warning-text: var(--omg-warning-text);
+  --color-brand-info: var(--omg-info);
+  --color-brand-info-subtle: var(--omg-info-subtle);
+  --color-brand-info-text: var(--omg-info-text);
+
+  --shadow-brand-1: var(--omg-shadow-1);
+  --shadow-brand-2: var(--omg-shadow-2);
+  --shadow-brand-3: var(--omg-shadow-3);
+
+  /* Radii from OMG's tokens: controls 8 px, cards and dialogs 12 px, popovers 8 px. */
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+  --radius-popover: 0.5rem;
+
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}

@@ -1,0 +1,86 @@
+/* Open Model Catalog theme: Topcoat UI's token names mapped onto the Open
+   Model Gateway brand tokens.
+
+   `topcoat ui init` installed the neutral theme here; it was then edited (the
+   UI commands never overwrite this file). The colours come from brand.css,
+   a byte-for-byte copy of omg-website/app/brand.css (indigo accent, light by
+   default, dark from the system setting or `.dark`/`data-theme="dark"`).
+   Change brand.css only together with the OMG website and docs.
+
+   Topcoat UI components refer only to the tokens below (bg-background,
+   text-muted-foreground, border-border, ...). Inter Variable is self-hosted
+   (src/fonts.rs); nothing is loaded from another origin. */
+
+@import "tailwindcss";
+@import "./brand.css";
+
+/* Scan the crate's Rust sources for Tailwind classes. */
+@source "./src/**/*.rs";
+
+/* Dark mode follows brand.css: system preference, or an explicit opt-in. */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not(.light):not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+  &:where(.dark *, [data-theme="dark"] *) {
+    @slot;
+  }
+}
+
+@theme inline {
+  --color-background: var(--omg-bg);
+  --color-foreground: var(--omg-text);
+  --color-card: var(--omg-surface);
+  --color-card-foreground: var(--omg-text);
+  --color-popover: var(--omg-surface-raised);
+  --color-popover-foreground: var(--omg-text);
+  --color-muted-foreground: var(--omg-text-muted);
+  --color-primary: var(--omg-primary);
+  --color-primary-foreground: var(--omg-primary-contrast);
+  --color-destructive: var(--omg-danger);
+  --color-destructive-foreground: var(--omg-text-inverse);
+  /* Decorative hairlines: cards, table rows. */
+  --color-border: var(--omg-border-emphasis);
+  /* Form-control boundaries need 3:1 against the surface. */
+  --color-input: var(--omg-border-strong);
+  --color-ring: var(--omg-focus-ring);
+  --shadow-xs: var(--omg-shadow-1);
+  --shadow-sm: var(--omg-shadow-2);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  a {
+    color: var(--omg-link);
+  }
+
+  a:hover {
+    color: var(--omg-link-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--omg-focus-ring);
+    outline-offset: 2px;
+  }
+
+  code,
+  pre,
+  kbd {
+    @apply font-mono;
+  }
+
+  /* Price figures line up in columns. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}

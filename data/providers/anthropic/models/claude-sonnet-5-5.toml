@@ -1,0 +1,68 @@
+id = "claude-sonnet-5-5"
+name = "Claude Sonnet 5.5"
+vendor = "Anthropic"
+family = "claude-sonnet"
+description = "The best combination of speed and intelligence in the Claude lineup."
+release_date = "2026-09-28"
+knowledge_cutoff = "2026-06"
+open_weights = false
+reasoning = true
+tool_call = true
+status = "active"
+docs = "https://platform.claude.com/docs/en/models/sonnet-5-5/overview"
+
+[modalities]
+input = ["text", "image"]
+output = ["text"]
+
+[limits]
+context = 1000000
+output = 128000
+
+[[offerings]]
+provider = "anthropic"
+upstream_id = "claude-sonnet-5-5"
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "2", output_tokens = "10", cache_read_tokens = "0.1", cache_write_5m_tokens = "2.5", cache_write_1h_tokens = "4", search_units = "0.01" }
+batch = { input_tokens = "1", output_tokens = "5" }
+source = { kind = "provider-page", url = "https://platform.claude.com/docs/en/about-claude/pricing", fetched_at = "2026-10-09T19:33:00Z" }
+notes = "Model pricing and Batch processing tables (cache hits are 0.05x base input for Sonnet 5.5); web search is $10 per 1,000 searches. The page lists batch rates for input and output tokens only."
+
+[[offerings]]
+provider = "amazon-bedrock"
+upstream_id = "global.anthropic.claude-sonnet-5-5"
+label = "Global cross-Region inference"
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "2", output_tokens = "10", cache_read_tokens = "0.1", cache_write_5m_tokens = "2.5", cache_write_1h_tokens = "4" }
+source = { kind = "provider-price-list", url = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json", fetched_at = "2026-10-09T19:52:00Z", version = "20261008235637", sha256 = "c63d32b0936895336534eaa2ecf08f3ac3b4210ee3376e91ccd9adda7309044e", cites = "https://aws.amazon.com/bedrock/pricing/", entry_key = "Claude Sonnet 5.5 / On-demand Inference / *_global_standard" }
+notes = "AWS price list for us-east-1, global usage types. Cache writes without a TTL suffix are the 5-minute writes."
+
+[[offerings]]
+provider = "amazon-bedrock"
+upstream_id = "us.anthropic.claude-sonnet-5-5"
+label = "US cross-Region inference"
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "2.2", output_tokens = "11", cache_read_tokens = "0.11", cache_write_5m_tokens = "2.75", cache_write_1h_tokens = "4.4" }
+source = { kind = "provider-price-list", url = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json", fetched_at = "2026-10-09T19:52:00Z", version = "20261008235637", sha256 = "c63d32b0936895336534eaa2ecf08f3ac3b4210ee3376e91ccd9adda7309044e", cites = "https://aws.amazon.com/bedrock/pricing/", entry_key = "Claude Sonnet 5.5 / On-demand Inference / *_standard" }
+notes = "AWS price list for us-east-1, regional usage types (10% above global)."
+
+[[offerings]]
+provider = "openrouter"
+upstream_id = "anthropic/claude-sonnet-5.5"
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "2", output_tokens = "10", cache_read_tokens = "0.1", cache_write_5m_tokens = "2.5", cache_write_1h_tokens = "4", search_units = "0.01" }
+batch = { input_tokens = "1", output_tokens = "5", cache_read_tokens = "0.05", cache_write_5m_tokens = "1.25", cache_write_1h_tokens = "2", search_units = "0.01" }
+source = { kind = "openrouter", url = "https://openrouter.ai/api/v1/models", fetched_at = "2026-10-09T19:37:00Z", sha256 = "bdc084896dbbfa88715d7c2212f0239499fb25aca504b4e5e4612fa2558cbf68", entry_key = "anthropic/claude-sonnet-5.5" }
+notes = "Batch rates are the separate anthropic/claude-sonnet-5.5:batch id."

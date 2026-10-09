@@ -1,0 +1,32 @@
+id = "gpt-oss-120b"
+name = "gpt-oss-120b"
+vendor = "OpenAI"
+family = "gpt-oss"
+description = "Open-weight 117B-parameter mixture-of-experts reasoning model from OpenAI."
+knowledge_cutoff = "2024-06-30"
+open_weights = true
+license = "Apache-2.0"
+reasoning = true
+tool_call = true
+status = "active"
+docs = "https://huggingface.co/openai/gpt-oss-120b"
+
+[modalities]
+input = ["text"]
+output = ["text"]
+
+[limits]
+context = 131072
+
+[[offerings]]
+provider = "openrouter"
+upstream_id = "openai/gpt-oss-120b"
+limits = { output = 117964 }
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "0.037", output_tokens = "0.17" }
+batch = { input_tokens = "0.0296", output_tokens = "0.136" }
+source = { kind = "openrouter", url = "https://openrouter.ai/api/v1/models", fetched_at = "2026-10-09T19:37:00Z", sha256 = "bdc084896dbbfa88715d7c2212f0239499fb25aca504b4e5e4612fa2558cbf68", entry_key = "openai/gpt-oss-120b" }
+notes = "OpenRouter's listed price; individual upstream endpoints may cost more. Batch rates are the separate openai/gpt-oss-120b:batch id."

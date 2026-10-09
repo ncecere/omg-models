@@ -1,0 +1,57 @@
+# cargo-deny policy (adapted from open-model-gateway). Run locally with
+# `cargo deny check`; CI runs the same check in the `cargo-deny` job.
+#
+# Every exception names the crate and the reason. Add new ones only with a
+# comment, and remove them as soon as the dependency moves on.
+
+[graph]
+all-features = true
+
+[output]
+feature-depth = 1
+
+# RustSec advisories. Vulnerabilities always fail; unmaintained and unsound
+# crates fail anywhere in the graph; yanked versions fail.
+[advisories]
+db-path = "$CARGO_HOME/advisory-dbs"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+unmaintained = "all"
+unsound = "all"
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Licences compatible with distributing the binary and image under MIT.
+allow = [
+    "MIT",
+    "MIT-0",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "Zlib",
+    "Unicode-3.0",
+    # webpki-roots (via ureq/rustls): the Mozilla CA bundle's data licence.
+    "CDLA-Permissive-2.0",
+]
+confidence-threshold = 0.93
+exceptions = []
+
+[licenses.private]
+# The workspace crates are `publish = false` (MIT, see LICENSE).
+ignore = true
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+highlight = "all"
+
+[sources]
+# crates.io only.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

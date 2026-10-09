@@ -1,0 +1,119 @@
+# Checks every push and pull request: formatting, clippy, tests (with the
+# Topcoat asset bundle), data validation and build, an offline sync smoke
+# run, cargo-deny, actionlint, and the distroless container contract.
+# On pushes to main and v* tags the tested image is published (image.yml).
+#
+# `workflow_dispatch` lets sync.yml run these checks on the bot branch:
+# pull requests opened with GITHUB_TOKEN do not trigger `pull_request` runs.
+#
+# Every action is pinned by commit SHA; the comment gives the version.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  TOPCOAT_CLI_VERSION: "0.10.0"
+
+jobs:
+  rust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # rust-toolchain.toml pins the compiler, rustfmt and clippy.
+      - name: Rust toolchain
+        run: rustup toolchain install && rustc --version
+
+      - uses: Swatinem/rust-cache@63fed3e2fecf6f7b51dc6f043341b79ef82a9ae7 # v2.9.2
+
+      - name: Topcoat CLI (asset bundler)
+        run: |
+          if ! topcoat --version 2>/dev/null | grep -qx "topcoat ${TOPCOAT_CLI_VERSION}"; then
+            cargo install topcoat-cli --version "=${TOPCOAT_CLI_VERSION}" --locked
+          fi
+
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+      # Pages render bundled assets; the HTTP tests load this bundle.
+      - name: Bundle assets
+        run: topcoat asset bundle --bin omg-models
+
+      - name: Tests
+        env:
+          OMG_MODELS_REQUIRE_ASSETS: "1"
+        run: cargo test --workspace --all-features
+
+      - name: Validate data
+        run: cargo run --quiet -p omg-models -- validate --data data
+
+      - name: Build the JSON API
+        run: |
+          cargo run --quiet -p omg-models -- build --data data --out dist
+          test -s dist/api.json
+          test -s dist/api/v1/omg-prices.json
+
+      # Recorded fixtures only: CI never fetches upstream prices.
+      - name: Sync smoke run (offline, dry run)
+        run: >-
+          cargo run --quiet -p omg-models -- sync --dry-run
+          --from-dir crates/cli/tests/fixtures --cache-dir "${RUNNER_TEMP}/sync-cache"
+          --today 2026-10-10 --summary "${RUNNER_TEMP}/summary.json" > /dev/null
+
+  cargo-deny:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1 (cargo-deny 0.20.2)
+        with:
+          command: check
+          arguments: --all-features
+
+  actionlint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint 1.7.12
+        run: >-
+          docker run --rm -v "${PWD}:/repo" --workdir /repo
+          rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+          -color
+
+  # The runtime contract of the image: distroless (no shell), UID 10001,
+  # read-only root filesystem, exec-form health check, /healthz and the API.
+  container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build
+        run: docker build --tag omg-models:ci .
+      - name: Runtime contract
+        run: bash scripts/container-test.sh omg-models:ci
+
+  image:
+    needs: [rust, cargo-deny, actionlint, container]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/image.yml

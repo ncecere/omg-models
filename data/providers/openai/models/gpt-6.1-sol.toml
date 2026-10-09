@@ -1,0 +1,56 @@
+id = "gpt-6.1-sol"
+name = "GPT-6.1 Sol"
+vendor = "OpenAI"
+family = "gpt-6"
+description = "Near-Astra performance for complex coding, computer use and professional work at a lower cost."
+knowledge_cutoff = "2026-04-30"
+open_weights = false
+reasoning = true
+tool_call = true
+status = "active"
+docs = "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+
+[modalities]
+input = ["text", "image"]
+output = ["text"]
+
+[limits]
+context = 1050000
+input = 922000
+output = 128000
+
+[[offerings]]
+provider = "openai"
+upstream_id = "gpt-6.1-sol"
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "2", output_tokens = "10", cache_read_tokens = "0.1", cache_write_tokens = "2.5" }
+standard_tiers = [
+  { above_prompt_tokens = 272000, rates = { input_tokens = "4", output_tokens = "15", cache_read_tokens = "0.2", cache_write_tokens = "5" } },
+]
+batch = { input_tokens = "1", output_tokens = "5", cache_read_tokens = "0.05", cache_write_tokens = "1.25" }
+batch_tiers = [
+  { above_prompt_tokens = 272000, rates = { input_tokens = "2", output_tokens = "7.5", cache_read_tokens = "0.1", cache_write_tokens = "2.5" } },
+]
+source = { kind = "provider-page", url = "https://developers.openai.com/api/docs/pricing", fetched_at = "2026-10-09T19:34:00Z", cites = "https://developers.openai.com/api/docs/models/gpt-6.1-sol" }
+notes = "Standard and Batch tables. Short context is up to 272K input tokens; long-context rates apply to the full request above it. Flex, Fast and Ultrafast modes are not represented."
+
+[[offerings]]
+provider = "openrouter"
+upstream_id = "openai/gpt-6.1-sol"
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "2", output_tokens = "10", cache_read_tokens = "0.1", cache_write_tokens = "2.5", search_units = "0.01" }
+standard_tiers = [
+  { above_prompt_tokens = 272000, rates = { input_tokens = "4", output_tokens = "15", cache_read_tokens = "0.2", cache_write_tokens = "5" } },
+]
+batch = { input_tokens = "1", output_tokens = "5", cache_read_tokens = "0.05", cache_write_tokens = "1.25", search_units = "0.01" }
+batch_tiers = [
+  { above_prompt_tokens = 272000, rates = { input_tokens = "2", output_tokens = "7.5", cache_read_tokens = "0.1", cache_write_tokens = "2.5" } },
+]
+source = { kind = "openrouter", url = "https://openrouter.ai/api/v1/models", fetched_at = "2026-10-09T19:37:00Z", sha256 = "bdc084896dbbfa88715d7c2212f0239499fb25aca504b4e5e4612fa2558cbf68", entry_key = "openai/gpt-6.1-sol" }
+notes = "Tiers are OpenRouter pricing.overrides with min_prompt_tokens = 272000. Batch rates are the separate openai/gpt-6.1-sol:batch id."

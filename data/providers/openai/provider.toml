@@ -1,0 +1,16 @@
+id = "openai"
+name = "OpenAI"
+type = "cloud"
+website = "https://openai.com"
+api_base = "https://api.openai.com/v1"
+api_style = "openai-chat"
+auth = "Bearer API key in the Authorization header."
+env = ["OPENAI_API_KEY"]
+docs = "https://developers.openai.com/api/docs"
+pricing_page = "https://developers.openai.com/api/docs/pricing"
+
+[sync]
+prices = "litellm"
+litellm_providers = ["openai"]
+genai_prices_provider = "openai"
+models_dev_provider = "openai"

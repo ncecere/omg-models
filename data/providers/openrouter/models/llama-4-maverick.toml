@@ -1,0 +1,29 @@
+id = "llama-4-maverick"
+name = "Llama 4 Maverick"
+vendor = "Meta"
+family = "llama-4"
+description = "Open-weight multimodal mixture-of-experts model (17B active parameters, 128 experts)."
+knowledge_cutoff = "2024-08-31"
+open_weights = true
+license = "Llama 4 Community License"
+status = "active"
+docs = "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct"
+
+[modalities]
+input = ["text", "image"]
+output = ["text"]
+
+[limits]
+context = 1048576
+
+[[offerings]]
+provider = "openrouter"
+upstream_id = "meta-llama/llama-4-maverick"
+limits = { context = 128000, output = 16384 }
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "0.1875", output_tokens = "0.6525", cache_read_tokens = "0.05" }
+source = { kind = "openrouter", url = "https://openrouter.ai/api/v1/models", fetched_at = "2026-10-09T19:37:00Z", sha256 = "bdc084896dbbfa88715d7c2212f0239499fb25aca504b4e5e4612fa2558cbf68", entry_key = "meta-llama/llama-4-maverick" }
+notes = "OpenRouter's listed price; its top endpoint serves 128K context and 16,384 output tokens."

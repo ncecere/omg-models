@@ -1,0 +1,15 @@
+id = "openrouter"
+name = "OpenRouter"
+type = "aggregator"
+website = "https://openrouter.ai"
+api_base = "https://openrouter.ai/api/v1"
+api_style = "openai-chat"
+auth = "Bearer API key in the Authorization header."
+env = ["OPENROUTER_API_KEY"]
+docs = "https://openrouter.ai/docs"
+pricing_page = "https://openrouter.ai/models"
+
+[sync]
+prices = "openrouter"
+genai_prices_provider = "openrouter"
+models_dev_provider = "openrouter"

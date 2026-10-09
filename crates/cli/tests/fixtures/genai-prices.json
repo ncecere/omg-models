@@ -1,0 +1,1220 @@
+[
+ {
+  "id": "anthropic",
+  "name": "Anthropic",
+  "pricing_urls": [
+   "https://www.anthropic.com/pricing#api"
+  ],
+  "api_pattern": "https://api\\.anthropic\\.com",
+  "model_match": {
+   "contains": "claude"
+  },
+  "provider_match": {
+   "contains": "anthropic"
+  },
+  "models": [
+   {
+    "id": "claude-haiku-5-5",
+    "name": "Claude Haiku 5.5",
+    "description": "For high-volume, latency-sensitive tasks such as classification, extraction, and routing",
+    "match": {
+     "or": [
+      {
+       "equals": "claude-haiku-5-5"
+      },
+      {
+       "regex": "^claude-haiku-5-5-\\d{8}$"
+      },
+      {
+       "starts_with": "claude-haiku-5-5@"
+      },
+      {
+       "starts_with": "claude-haiku-5.5"
+      },
+      {
+       "starts_with": "claude-5-5-haiku"
+      },
+      {
+       "starts_with": "claude-5.5-haiku"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Priced by prompt length: every token in a request whose prompt exceeds 100,000 tokens is billed at the higher rate (5x). Cache reads are the standard 0.1x of base input. Ref: https://platform.claude.com/docs/en/about-claude/pricing#long-context-pricing Model ID ref: https://platform.claude.com/docs/en/about-claude/models/overview",
+    "prices": {
+     "input_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.5
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.125,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.625
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.01,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.05
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.5,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 2.5
+       }
+      ]
+     },
+     "cache_write_1h_mtok": {
+      "base": 0.2,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 1
+       }
+      ]
+     },
+     "web_searches_kcount": 10
+    }
+   },
+   {
+    "id": "claude-opus-5-5",
+    "name": "Claude Opus 5.5",
+    "description": "For long-running agentic coding and knowledge work",
+    "match": {
+     "or": [
+      {
+       "equals": "claude-opus-5-5"
+      },
+      {
+       "regex": "^claude-opus-5-5-\\d{8}$"
+      },
+      {
+       "starts_with": "claude-opus-5.5"
+      },
+      {
+       "starts_with": "claude-5-5-opus"
+      },
+      {
+       "starts_with": "claude-5.5-opus"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Flat pricing across full 1M context window (no tiered pricing). Cache hits are 0.05x base input (not the usual 0.1x), unique to Opus 5.5. Ref: https://platform.claude.com/docs/en/about-claude/pricing#model-pricing Prompt caching ref: https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing",
+    "prices": {
+     "input_mtok": 4,
+     "cache_write_mtok": 5,
+     "cache_read_mtok": 0.2,
+     "output_mtok": 20,
+     "cache_write_1h_mtok": 8,
+     "web_searches_kcount": 10
+    }
+   },
+   {
+    "id": "claude-sonnet-5-5",
+    "name": "Claude Sonnet 5.5",
+    "description": "The best combination of speed and intelligence",
+    "match": {
+     "or": [
+      {
+       "equals": "claude-sonnet-5-5"
+      },
+      {
+       "regex": "^claude-sonnet-5-5-\\d{8}$"
+      },
+      {
+       "starts_with": "claude-sonnet-5-5@"
+      },
+      {
+       "starts_with": "claude-sonnet-5.5"
+      },
+      {
+       "starts_with": "claude-5-5-sonnet"
+      },
+      {
+       "starts_with": "claude-5.5-sonnet"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Flat pricing across the full 1M context window (no tiered pricing). Ref: https://platform.claude.com/docs/en/about-claude/pricing#model-pricing Model ID ref: https://platform.claude.com/docs/en/about-claude/models/overview",
+    "prices": {
+     "input_mtok": 2,
+     "cache_write_mtok": 2.5,
+     "cache_read_mtok": 0.2,
+     "output_mtok": 10,
+     "cache_write_1h_mtok": 4,
+     "web_searches_kcount": 10
+    }
+   }
+  ]
+ },
+ {
+  "id": "aws",
+  "name": "AWS Bedrock",
+  "pricing_urls": [
+   "https://aws.amazon.com/bedrock/pricing/"
+  ],
+  "api_pattern": "https://bedrock-runtime\\.[a-z0-9-]+\\.amazonaws\\.com(/|$)",
+  "provider_match": {
+   "or": [
+    {
+     "contains": "bedrock"
+    },
+    {
+     "contains": "amazon"
+    }
+   ]
+  },
+  "models": [
+   {
+    "id": "global.anthropic.claude-haiku-5-5",
+    "match": {
+     "or": [
+      {
+       "ends_with": "global.anthropic.claude-haiku-5-5"
+      },
+      {
+       "contains": "global.anthropic.claude-haiku-5-5-v1"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Global endpoint (no premium). Prompts over 100,000 tokens bill every token at the long-context rate. Ref: AWS price list API, AmazonBedrockFoundationModels \"Claude Haiku 5.5 (Amazon Bedrock Edition)\" (https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json) Model ID ref: https://platform.claude.com/docs/en/about-claude/models/overview",
+    "prices": {
+     "input_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.5
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.125,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.625
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.01,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.05
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.5,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 2.5
+       }
+      ]
+     },
+     "cache_write_1h_mtok": {
+      "base": 0.2,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 1
+       }
+      ]
+     }
+    }
+   },
+   {
+    "id": "global.anthropic.claude-opus-5-5",
+    "match": {
+     "or": [
+      {
+       "ends_with": "global.anthropic.claude-opus-5-5"
+      },
+      {
+       "contains": "global.anthropic.claude-opus-5-5-v1"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Global endpoint (no premium). Cache hits are 0.05x base input (not the usual 0.1x), unique to Opus 5.5. Ref: AWS price list API, AmazonBedrockFoundationModels \"Claude Opus 5.5 (Amazon Bedrock Edition)\" (https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json) Model ID ref: https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock",
+    "prices": {
+     "input_mtok": 4,
+     "cache_write_mtok": 5,
+     "cache_read_mtok": 0.2,
+     "output_mtok": 20,
+     "cache_write_1h_mtok": 8
+    }
+   },
+   {
+    "id": "global.anthropic.claude-sonnet-5-5",
+    "match": {
+     "or": [
+      {
+       "ends_with": "global.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "contains": "global.anthropic.claude-sonnet-5-5-v1"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Global endpoint (no premium), flat across the full 1M context window. Ref: AWS price list API, AmazonBedrockFoundationModels \"Claude Sonnet 5.5 (Amazon Bedrock Edition)\" (https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json) Model ID ref: https://platform.claude.com/docs/en/about-claude/models/overview",
+    "prices": {
+     "input_mtok": 2,
+     "cache_write_mtok": 2.5,
+     "cache_read_mtok": 0.2,
+     "output_mtok": 10,
+     "cache_write_1h_mtok": 4
+    }
+   },
+   {
+    "id": "global.openai.gpt-6-luna",
+    "name": "GPT-6 Luna (global)",
+    "match": {
+     "contains": "global.openai.gpt-6-luna"
+    },
+    "context_window": 1000000,
+    "price_comments": "Launched on Bedrock 2026-09-22. AWS had not yet published a model card or rate table for Luna, so these rates follow the rule every Bedrock OpenAI model card states: Global CRIS is OpenAI's list price, and In-Region/Geo add 10%. GPT-6 Astra's card confirms the rule for the GPT-6 family. Cache writes (30m TTL) are 1.25x input. Above 272K input tokens, input and cache are 2x and output 1.5x (tier start 272000). Refs: https://aws.amazon.com/about-aws/whats-new/2026/09/openai-gpt-6-sol-luna-on-amazon-bedrock/, https://developers.openai.com/api/docs/models/gpt-6-luna",
+    "prices": {
+     "input_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.2
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.125,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.25
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.01,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.02
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.75
+       }
+      ]
+     }
+    }
+   },
+   {
+    "id": "global.openai.gpt-6.1-sol",
+    "name": "GPT-6.1 Sol (global)",
+    "match": {
+     "contains": "global.openai.gpt-6.1-sol"
+    },
+    "context_window": 1000000,
+    "price_comments": "Launched on Bedrock 2026-09-29. Global cross-Region inference, identical to OpenAI's own list price and 10% below In-Region and Geo. Cache reads are 5% of input and cache writes 1.25x. AWS bills the whole request at long-context rates above 272K input tokens: input and cache are 2x and output 1.5x. Tier starts use 272000 because the pricing engines select a tier when the token count is greater than start. Refs: https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-1-sol.html, https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+    "prices": {
+     "input_mtok": {
+      "base": 2,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 4
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 2.5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 5
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.2
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 10,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 15
+       }
+      ]
+     }
+    }
+   },
+   {
+    "id": "openai.gpt-oss-120b-1:0",
+    "name": "gpt-oss-120b",
+    "match": {
+     "contains": "openai.gpt-oss-120b-1"
+    },
+    "context_window": 128000,
+    "prices": {
+     "input_mtok": 0.15,
+     "output_mtok": 0.6
+    }
+   },
+   {
+    "id": "regional.anthropic.claude-haiku-5-5",
+    "match": {
+     "or": [
+      {
+       "equals": "anthropic.claude-haiku-5-5"
+      },
+      {
+       "equals": "claude-haiku-5-5"
+      },
+      {
+       "starts_with": "anthropic.claude-haiku-5-5-v1"
+      },
+      {
+       "starts_with": "claude-haiku-5-5-v1"
+      },
+      {
+       "equals": "us.anthropic.claude-haiku-5-5"
+      },
+      {
+       "equals": "au.anthropic.claude-haiku-5-5"
+      },
+      {
+       "equals": "apac.anthropic.claude-haiku-5-5"
+      },
+      {
+       "equals": "eu.anthropic.claude-haiku-5-5"
+      },
+      {
+       "equals": "us-gov.anthropic.claude-haiku-5-5"
+      },
+      {
+       "equals": "jp.anthropic.claude-haiku-5-5"
+      },
+      {
+       "contains": "us.anthropic.claude-haiku-5-5-v1"
+      },
+      {
+       "contains": "au.anthropic.claude-haiku-5-5-v1"
+      },
+      {
+       "contains": "apac.anthropic.claude-haiku-5-5-v1"
+      },
+      {
+       "contains": "eu.anthropic.claude-haiku-5-5-v1"
+      },
+      {
+       "contains": "us-gov.anthropic.claude-haiku-5-5-v1"
+      },
+      {
+       "contains": "jp.anthropic.claude-haiku-5-5-v1"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Regional endpoints and inference profiles carry a 10% premium over the global endpoint. Prompts over 100,000 tokens bill every token at the long-context rate. Ref: AWS price list API, AmazonBedrockFoundationModels \"Claude Haiku 5.5 (Amazon Bedrock Edition)\" (https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json)",
+    "prices": {
+     "input_mtok": {
+      "base": 0.11,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.55
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.1375,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.6875
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.011,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 0.055
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.55,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 2.75
+       }
+      ]
+     },
+     "cache_write_1h_mtok": {
+      "base": 0.22,
+      "tiers": [
+       {
+        "start": 100000,
+        "price": 1.1
+       }
+      ]
+     }
+    }
+   },
+   {
+    "id": "regional.anthropic.claude-opus-5-5",
+    "match": {
+     "or": [
+      {
+       "equals": "anthropic.claude-opus-5-5"
+      },
+      {
+       "equals": "claude-opus-5-5"
+      },
+      {
+       "starts_with": "anthropic.claude-opus-5-5-v1"
+      },
+      {
+       "starts_with": "claude-opus-5-5-v1"
+      },
+      {
+       "equals": "us.anthropic.claude-opus-5-5"
+      },
+      {
+       "equals": "au.anthropic.claude-opus-5-5"
+      },
+      {
+       "equals": "eu.anthropic.claude-opus-5-5"
+      },
+      {
+       "equals": "jp.anthropic.claude-opus-5-5"
+      },
+      {
+       "contains": "us.anthropic.claude-opus-5-5-v1"
+      },
+      {
+       "contains": "au.anthropic.claude-opus-5-5-v1"
+      },
+      {
+       "contains": "eu.anthropic.claude-opus-5-5-v1"
+      },
+      {
+       "contains": "jp.anthropic.claude-opus-5-5-v1"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Regional endpoints and US/EU/JP/AU inference profiles carry a 10% premium over the global endpoint. Cache hits are 0.05x base input (not the usual 0.1x), unique to Opus 5.5. Ref: AWS price list API, AmazonBedrockFoundationModels \"Claude Opus 5.5 (Amazon Bedrock Edition)\" (https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json)",
+    "prices": {
+     "input_mtok": 4.4,
+     "cache_write_mtok": 5.5,
+     "cache_read_mtok": 0.22,
+     "output_mtok": 22,
+     "cache_write_1h_mtok": 8.8
+    }
+   },
+   {
+    "id": "regional.anthropic.claude-sonnet-5-5",
+    "match": {
+     "or": [
+      {
+       "equals": "anthropic.claude-sonnet-5-5"
+      },
+      {
+       "equals": "claude-sonnet-5-5"
+      },
+      {
+       "starts_with": "anthropic.claude-sonnet-5-5-v1"
+      },
+      {
+       "starts_with": "claude-sonnet-5-5-v1"
+      },
+      {
+       "equals": "us.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "equals": "au.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "equals": "apac.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "equals": "eu.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "equals": "us-gov.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "equals": "jp.anthropic.claude-sonnet-5-5"
+      },
+      {
+       "contains": "us.anthropic.claude-sonnet-5-5-v1"
+      },
+      {
+       "contains": "au.anthropic.claude-sonnet-5-5-v1"
+      },
+      {
+       "contains": "apac.anthropic.claude-sonnet-5-5-v1"
+      },
+      {
+       "contains": "eu.anthropic.claude-sonnet-5-5-v1"
+      },
+      {
+       "contains": "us-gov.anthropic.claude-sonnet-5-5-v1"
+      },
+      {
+       "contains": "jp.anthropic.claude-sonnet-5-5-v1"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "Regional endpoints and inference profiles carry a 10% premium over the global endpoint. Ref: AWS price list API, AmazonBedrockFoundationModels \"Claude Sonnet 5.5 (Amazon Bedrock Edition)\" (https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json)",
+    "prices": {
+     "input_mtok": 2.2,
+     "cache_write_mtok": 2.75,
+     "cache_read_mtok": 0.22,
+     "output_mtok": 11,
+     "cache_write_1h_mtok": 4.4
+    }
+   },
+   {
+    "id": "regional.openai.gpt-6-luna",
+    "name": "GPT-6 Luna (regional)",
+    "match": {
+     "or": [
+      {
+       "starts_with": "openai.gpt-6-luna"
+      },
+      {
+       "starts_with": "gpt-6-luna"
+      },
+      {
+       "contains": "us.openai.gpt-6-luna"
+      },
+      {
+       "contains": "in.openai.gpt-6-luna"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "In-Region and Geo (`us.`/`in.`) inference, 10% above global. AWS had not yet published a model card or rate table for Luna; see the global entry for how these rates were derived. Ref: https://aws.amazon.com/about-aws/whats-new/2026/09/openai-gpt-6-sol-luna-on-amazon-bedrock/",
+    "prices": {
+     "input_mtok": {
+      "base": 0.11,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.22
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.1375,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.275
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.011,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.022
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.55,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.825
+       }
+      ]
+     }
+    }
+   },
+   {
+    "id": "regional.openai.gpt-6.1-sol",
+    "name": "GPT-6.1 Sol (regional)",
+    "match": {
+     "or": [
+      {
+       "starts_with": "openai.gpt-6.1-sol"
+      },
+      {
+       "starts_with": "gpt-6.1-sol"
+      },
+      {
+       "contains": "us.openai.gpt-6.1-sol"
+      }
+     ]
+    },
+    "context_window": 1000000,
+    "price_comments": "In-Region (`bedrock-mantle` in us-east-1) and US Geo (`us.`) inference, 10% above global. AWS offers no `in.` profile for 6.1 Sol. See the global entry for tiering and cache notes. Ref: https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-6-1-sol.html",
+    "prices": {
+     "input_mtok": {
+      "base": 2.2,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 4.4
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 2.75,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 5.5
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.11,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.22
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 11,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 16.5
+       }
+      ]
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "openai",
+  "name": "OpenAI",
+  "pricing_urls": [
+   "https://developers.openai.com/api/docs/pricing",
+   "https://developers.openai.com/api/docs/guides/prompt-caching",
+   "https://platform.openai.com/docs/pricing",
+   "https://openai.com/api/pricing/",
+   "https://platform.openai.com/docs/models",
+   "https://help.openai.com/en/articles/7127956-how-much-does-gpt-4-cost"
+  ],
+  "api_pattern": "https://api\\.openai\\.com",
+  "model_match": {
+   "or": [
+    {
+     "starts_with": "gpt-"
+    },
+    {
+     "equals": "whisper-1"
+    },
+    {
+     "regex": "^o[134]"
+    }
+   ]
+  },
+  "provider_match": {
+   "contains": "openai"
+  },
+  "models": [
+   {
+    "id": "gpt-5.4-mini",
+    "name": "GPT-5.4 mini",
+    "description": "Our strongest mini model yet for coding, computer use, and subagents.",
+    "match": {
+     "or": [
+      {
+       "equals": "gpt-5.4-mini"
+      },
+      {
+       "equals": "gpt-5.4-mini-2026-03-17"
+      },
+      {
+       "equals": "gpt-5-4-mini"
+      },
+      {
+       "equals": "gpt-5-4-mini-2026-03-17"
+      }
+     ]
+    },
+    "context_window": 400000,
+    "prices": {
+     "input_mtok": 0.75,
+     "cache_read_mtok": 0.075,
+     "output_mtok": 4.5,
+     "web_searches_kcount": 10,
+     "storage_searches_kcount": 2.5
+    }
+   },
+   {
+    "id": "gpt-6-luna",
+    "name": "GPT-6 Luna",
+    "description": "Efficient model for focused, high-volume tasks.",
+    "match": {
+     "or": [
+      {
+       "equals": "gpt-6-luna"
+      },
+      {
+       "regex": "^gpt-6-luna-\\d{4}-\\d{2}-\\d{2}$"
+      }
+     ]
+    },
+    "context_window": 1050000,
+    "price_comments": "Cache reads cost 10% of input; cache writes cost 1.25x. Prompts with more than 272K input tokens cost 2x for input and cache tokens and 1.5x for output. Tier starts use 272000 because the pricing engines select a tier when token count exceeds start. Ref: https://developers.openai.com/api/docs/models/gpt-6-luna",
+    "prices": {
+     "input_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.2
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.125,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.25
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.01,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.02
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.75
+       }
+      ]
+     },
+     "web_searches_kcount": 10,
+     "storage_searches_kcount": 2.5
+    }
+   },
+   {
+    "id": "gpt-6.1-sol",
+    "name": "GPT-6.1 Sol",
+    "description": "Model for complex coding and professional work at a lower cost than GPT-6 Astra.",
+    "match": {
+     "or": [
+      {
+       "equals": "gpt-6.1-sol"
+      },
+      {
+       "regex": "^gpt-6\\.1-sol-\\d{4}-\\d{2}-\\d{2}$"
+      }
+     ]
+    },
+    "context_window": 1050000,
+    "price_comments": "Released 2026-09-29. Cache reads cost 5% of input; cache writes cost 1.25x. Prompts with more than 272K input tokens cost 2x for input and cache tokens and 1.5x for output. Tier starts use 272000 because the pricing engines select a tier when token count exceeds start. Refs: https://developers.openai.com/api/docs/models/gpt-6.1-sol, https://developers.openai.com/api/docs/changelog",
+    "prices": {
+     "input_mtok": {
+      "base": 2,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 4
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 2.5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 5
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.2
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 10,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 15
+       }
+      ]
+     },
+     "web_searches_kcount": 10,
+     "storage_searches_kcount": 2.5
+    }
+   },
+   {
+    "id": "gpt-oss-120b",
+    "name": "gpt-oss-120b",
+    "description": "gpt-oss-120b is an open-weight, 117B-parameter Mixture-of-Experts (MoE) language model from OpenAI designed for high-reasoning, agentic, and general-purpose production use cases.",
+    "match": {
+     "equals": "gpt-oss-120b"
+    },
+    "context_window": 131072,
+    "price_comments": "Imported from OpenRouter pricing; verify against OpenAI pricing when native API pricing is published.",
+    "prices": {
+     "input_mtok": 0.039,
+     "output_mtok": 0.18
+    }
+   }
+  ]
+ },
+ {
+  "id": "openrouter",
+  "name": "OpenRouter",
+  "pricing_urls": [
+   "https://openrouter.ai/models"
+  ],
+  "api_pattern": "https://(api\\.)?openrouter\\.ai",
+  "models": [
+   {
+    "id": "llama-4-maverick:free",
+    "name": "Llama 4 Maverick (free)",
+    "match": {
+     "equals": "llama-4-maverick:free"
+    },
+    "prices": {}
+   },
+   {
+    "id": "meta-llama/llama-4-maverick",
+    "name": "Llama 4 Maverick",
+    "match": {
+     "equals": "meta-llama/llama-4-maverick"
+    },
+    "prices": {
+     "input_mtok": 0.15,
+     "output_mtok": 0.6
+    }
+   },
+   {
+    "id": "meta-llama/llama-4-maverick:free",
+    "match": {
+     "equals": "meta-llama/llama-4-maverick:free"
+    },
+    "prices": {}
+   },
+   {
+    "id": "openai/gpt-5.4-mini",
+    "name": "GPT-5.4 Mini",
+    "match": {
+     "equals": "openai/gpt-5.4-mini"
+    },
+    "context_window": 400000,
+    "prices": {
+     "input_mtok": 0.75,
+     "cache_read_mtok": 0.075,
+     "output_mtok": 4.5
+    }
+   },
+   {
+    "id": "openai/gpt-6-luna",
+    "name": "GPT-6 Luna",
+    "match": {
+     "or": [
+      {
+       "equals": "openai/gpt-6-luna"
+      },
+      {
+       "equals": "openai/gpt-6-luna-pro"
+      },
+      {
+       "regex": "^openai/gpt-6-luna-\\d{8}$"
+      }
+     ]
+    },
+    "context_window": 1050000,
+    "price_comments": "OpenRouter lists the base and pro routes at the same rates. Long-context tier (>272K prompt tokens) is 2x input and cache rates and 1.5x output. Ref: https://openrouter.ai/api/v1/models (pricing.overrides).",
+    "prices": {
+     "input_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.2
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.125,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.25
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.01,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.02
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.75
+       }
+      ]
+     },
+     "web_searches_kcount": 10
+    }
+   },
+   {
+    "id": "openai/gpt-6-luna:batch",
+    "name": "GPT-6 Luna Batch",
+    "match": {
+     "or": [
+      {
+       "equals": "openai/gpt-6-luna:batch"
+      },
+      {
+       "equals": "openai/gpt-6-luna-pro:batch"
+      }
+     ]
+    },
+    "context_window": 1050000,
+    "price_comments": "OpenRouter's batch routes bill input, cache, and output tokens at half the standard rates; web searches retain their $0.01 per-call rate. Ref: https://openrouter.ai/api/v1/models.",
+    "prices": {
+     "input_mtok": {
+      "base": 0.05,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.1
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 0.0625,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.125
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.005,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.01
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 0.25,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.375
+       }
+      ]
+     },
+     "web_searches_kcount": 10
+    }
+   },
+   {
+    "id": "openai/gpt-6.1-sol",
+    "name": "GPT-6.1 Sol",
+    "match": {
+     "or": [
+      {
+       "equals": "openai/gpt-6.1-sol"
+      },
+      {
+       "equals": "openai/gpt-6.1-sol-pro"
+      },
+      {
+       "regex": "^openai/gpt-6\\.1-sol-\\d{8}$"
+      },
+      {
+       "regex": "^openai/gpt-6\\.1-sol-pro-\\d{8}$"
+      }
+     ]
+    },
+    "context_window": 1050000,
+    "price_comments": "OpenRouter lists the base and pro routes at the same rates. Long-context tier (>272K prompt tokens) is 2x input and cache rates and 1.5x output. Ref: https://openrouter.ai/api/v1/models (pricing.overrides).",
+    "prices": {
+     "input_mtok": {
+      "base": 2,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 4
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 2.5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 5
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.2
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 10,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 15
+       }
+      ]
+     },
+     "web_searches_kcount": 10
+    }
+   },
+   {
+    "id": "openai/gpt-6.1-sol:batch",
+    "name": "GPT-6.1 Sol Batch",
+    "match": {
+     "or": [
+      {
+       "equals": "openai/gpt-6.1-sol:batch"
+      },
+      {
+       "equals": "openai/gpt-6.1-sol-pro:batch"
+      }
+     ]
+    },
+    "context_window": 1050000,
+    "price_comments": "OpenRouter's batch routes bill input, cache, and output tokens at half the standard rates; web searches retain their $0.01 per-call rate. Ref: https://openrouter.ai/api/v1/models.",
+    "prices": {
+     "input_mtok": {
+      "base": 1,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 2
+       }
+      ]
+     },
+     "cache_write_mtok": {
+      "base": 1.25,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 2.5
+       }
+      ]
+     },
+     "cache_read_mtok": {
+      "base": 0.05,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 0.1
+       }
+      ]
+     },
+     "output_mtok": {
+      "base": 5,
+      "tiers": [
+       {
+        "start": 272000,
+        "price": 7.5
+       }
+      ]
+     },
+     "web_searches_kcount": 10
+    }
+   },
+   {
+    "id": "openai/gpt-oss-120b",
+    "name": "gpt-oss-120b",
+    "match": {
+     "equals": "openai/gpt-oss-120b"
+    },
+    "prices": {
+     "input_mtok": 0.039,
+     "output_mtok": 0.18
+    }
+   },
+   {
+    "id": "openai/gpt-oss-120b:free",
+    "name": "gpt-oss-120b (free)",
+    "match": {
+     "equals": "openai/gpt-oss-120b:free"
+    },
+    "prices": {}
+   }
+  ]
+ }
+]

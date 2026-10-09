@@ -1,0 +1,16 @@
+id = "anthropic"
+name = "Anthropic"
+type = "cloud"
+website = "https://www.anthropic.com"
+api_base = "https://api.anthropic.com/v1"
+api_style = "anthropic-messages"
+auth = "API key in the x-api-key header, plus an anthropic-version header."
+env = ["ANTHROPIC_API_KEY"]
+docs = "https://platform.claude.com/docs"
+pricing_page = "https://platform.claude.com/docs/en/about-claude/pricing"
+
+[sync]
+prices = "litellm"
+litellm_providers = ["anthropic"]
+genai_prices_provider = "anthropic"
+models_dev_provider = "anthropic"

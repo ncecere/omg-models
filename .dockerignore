@@ -1,0 +1,9 @@
+# Only the workspace sources and data go into the build context.
+target/
+dist/
+.checks/
+.sync/
+.git/
+.github/
+**/*.swp
+.DS_Store

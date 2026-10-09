@@ -1,0 +1,6 @@
+/target/
+/dist/
+/.checks/
+/.sync/
+*.swp
+.DS_Store

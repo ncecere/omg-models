@@ -1,0 +1,16 @@
+id = "amazon-bedrock"
+name = "Amazon Bedrock"
+type = "cloud"
+website = "https://aws.amazon.com/bedrock/"
+api_base = "https://bedrock-runtime.us-east-1.amazonaws.com"
+api_style = "bedrock-converse"
+auth = "AWS Signature Version 4 with IAM credentials, or a Bedrock API key as a Bearer token. The endpoint is per Region."
+env = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"]
+docs = "https://docs.aws.amazon.com/bedrock/latest/userguide/"
+pricing_page = "https://aws.amazon.com/bedrock/pricing/"
+
+[sync]
+prices = "litellm"
+litellm_providers = ["bedrock", "bedrock_converse"]
+genai_prices_provider = "aws"
+models_dev_provider = "amazon-bedrock"

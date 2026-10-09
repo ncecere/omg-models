@@ -1,0 +1,42 @@
+# Weekly dependency updates, grouped so each ecosystem opens at most one
+# version-update pull request a week (security updates still arrive
+# individually). Every PR runs ci.yml, including cargo-deny.
+version: 2
+updates:
+  # Rust workspace (Cargo.toml pins every crate exactly; Cargo.lock).
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies, rust]
+    groups:
+      # Topcoat is pre-1.0; its crates must move together and the
+      # topcoat-cli version in the Dockerfile and workflows with them.
+      topcoat:
+        patterns: ["topcoat*"]
+      cargo:
+        patterns: ["*"]
+
+  # Workflow actions stay pinned by commit SHA; Dependabot updates the SHA
+  # and the version comment together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    labels: [dependencies, github_actions]
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Dockerfile base images (rust build stage, distroless runtime digest).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    labels: [dependencies, docker]
+    groups:
+      images:
+        patterns: ["*"]

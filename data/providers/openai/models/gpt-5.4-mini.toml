@@ -1,0 +1,33 @@
+id = "gpt-5.4-mini"
+name = "GPT-5.4 Mini"
+vendor = "OpenAI"
+family = "gpt-5"
+description = "A fast, efficient GPT-5.4 model for coding, computer use and subagents."
+knowledge_cutoff = "2025-08-31"
+open_weights = false
+reasoning = true
+tool_call = true
+status = "active"
+docs = "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
+
+[modalities]
+input = ["text", "image"]
+output = ["text"]
+
+[limits]
+context = 400000
+input = 272000
+output = 128000
+
+[[offerings]]
+provider = "openai"
+upstream_id = "gpt-5.4-mini"
+aliases = ["gpt-5.4-mini-2026-03-17"]
+
+[[offerings.prices]]
+effective_from = "2026-10-09"
+currency = "USD"
+standard = { input_tokens = "0.75", output_tokens = "4.5", cache_read_tokens = "0.075" }
+batch = { input_tokens = "0.375", output_tokens = "2.25", cache_read_tokens = "0.0375" }
+source = { kind = "provider-page", url = "https://developers.openai.com/api/docs/pricing", fetched_at = "2026-10-09T19:34:00Z", cites = "https://developers.openai.com/api/docs/models/gpt-5.4-mini" }
+notes = "Standard and Batch tables. The model page lists no cache-write price."

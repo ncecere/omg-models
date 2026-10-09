@@ -1,0 +1,50 @@
+[workspace]
+resolver = "3"
+members = ["crates/catalog", "crates/cli", "crates/web"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.90"
+license = "MIT"
+repository = "https://github.com/ncecere/omg-models"
+homepage = "https://models.omg.bitop.dev"
+publish = false
+
+# Every dependency is pinned exactly; Dependabot moves the pins (one grouped PR
+# a week). Topcoat is pre-1.0 and documents breaking changes between minors.
+[workspace.dependencies]
+omg-models-catalog = { path = "crates/catalog" }
+omg-models-web = { path = "crates/web" }
+
+anyhow = "=1.0.104"
+clap = { version = "=4.6.7", features = ["derive", "env"] }
+regex = "=1.13.1"
+schemars = "=1.2.2"
+serde = { version = "=1.0.229", features = ["derive"] }
+# `arbitrary_precision` keeps JSON numbers as their source text, so upstream
+# prices (`3e-06`) are parsed as exact decimals and never through f64.
+serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
+sha2 = "=0.11.0"
+thiserror = "=2.0.21"
+tokio = { version = "=1.53.2", features = ["rt-multi-thread", "macros", "net", "signal"] }
+toml = "=1.1.8"
+ureq = { version = "=3.4.2", default-features = false, features = ["rustls", "gzip"] }
+topcoat = { version = "=0.10.0", default-features = false }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+too_many_lines = "allow"
+doc_markdown = "allow"
+
+[profile.release]
+codegen-units = 4
+lto = "thin"
+strip = "debuginfo"
