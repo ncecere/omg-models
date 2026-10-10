@@ -10,12 +10,14 @@ reasoning = true
 tool_call = true
 status = "active"
 docs = "https://huggingface.co/openai/gpt-oss-120b"
+release_date = "2025-08-05"
 
 [modalities]
 input = ["text"]
 output = ["text"]
 
 [limits]
+output = 117964
 context = 131072
 
 [[offerings]]

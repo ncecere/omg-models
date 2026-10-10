@@ -31,6 +31,15 @@ batch = { input_tokens = "2", output_tokens = "10" }
 source = { kind = "provider-page", url = "https://platform.claude.com/docs/en/about-claude/pricing", fetched_at = "2026-10-09T19:33:00Z" }
 notes = "Model pricing and Batch processing tables; web search is $10 per 1,000 searches. The page lists batch rates for input and output tokens only."
 
+[[offerings.prices]]
+effective_from = "2026-10-10"
+currency = "USD"
+standard = { input_tokens = "4", output_tokens = "20", cache_read_tokens = "0.2", cache_write_5m_tokens = "5", cache_write_1h_tokens = "8", search_units = "0.01" }
+batch = { input_tokens = "2", output_tokens = "10", cache_read_tokens = "0.1", cache_write_5m_tokens = "2.5" }
+source = { kind = "litellm", url = "https://raw.githubusercontent.com/BerriAI/litellm/729b02d05719715f4faeb1f81ef2728ef06c3273/model_prices_and_context_window.json", fetched_at = "2026-10-10T13:46:31Z", version = "729b02d05719715f4faeb1f81ef2728ef06c3273", sha256 = "9b88d7873307df1a207d21189a4ffcebd4259363e1bdb53c72f519ad786ab670", entry_key = "claude-opus-5-5", cites = "https://platform.claude.com/docs/en/about-claude/pricing", carried_over = ["search_units"] }
+notes = "Synced from LiteLLM (claude-opus-5-5). Carried over unchanged because the source does not list them: search_units."
+
+
 [[offerings]]
 provider = "amazon-bedrock"
 upstream_id = "global.anthropic.claude-opus-5-5"
