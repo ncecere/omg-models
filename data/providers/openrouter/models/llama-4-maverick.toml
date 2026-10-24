@@ -8,12 +8,14 @@ open_weights = true
 license = "Llama 4 Community License"
 status = "active"
 docs = "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct"
+release_date = "2025-04-05"
 
 [modalities]
 input = ["text", "image"]
 output = ["text"]
 
 [limits]
+output = 16384
 context = 1048576
 
 [[offerings]]
