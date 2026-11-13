@@ -67,7 +67,7 @@ jobs:
       - name: Rust toolchain
         run: rustup toolchain install && rustc --version
 
-      - uses: Swatinem/rust-cache@63fed3e2fecf6f7b51dc6f043341b79ef82a9ae7 # v2.9.2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
       - name: Build
         run: cargo build --locked --release -p omg-models
@@ -126,7 +126,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
         if: steps.compare.outputs.changed == 'true'
 
       - name: Sign the manifest (cosign keyless)
